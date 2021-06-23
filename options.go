@@ -1,4 +1,4 @@
-package nest
+package hive
 
 import "time"
 
@@ -20,7 +20,7 @@ type Options struct {
 	PreAlloc bool
 	// Max number of goroutine blocking on pool.Submit.
 	// 0 (default value) means no such limit.
-	MaxBlockingTasks  int
+	MaxBlockingTasks int
 	// When Nonblocking is true, Pool.Submit will never be blocked.
 	// ErrPoolOverload will be returned when Pool.Submit cannot be done at once.
 	// When Nonblocking is true, MaxBlockingTasks is inoperative.

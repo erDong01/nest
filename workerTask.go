@@ -1,4 +1,4 @@
-package nest
+package hive
 
 import "time"
 
@@ -8,14 +8,12 @@ type workerStack struct {
 	size   int
 }
 
-
 func newWorkerStack(size int) *workerStack {
 	return &workerStack{
 		items: make([]*goWorker, 0, size),
 		size:  size,
 	}
 }
-
 
 func (wq *workerStack) len() int {
 	return len(wq.items)

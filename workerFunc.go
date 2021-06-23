@@ -1,4 +1,4 @@
-package nest
+package hive
 
 import (
 	"runtime"
@@ -8,7 +8,7 @@ import (
 // goWorkerWithFunc is the actual executor who runs the tasks,
 // it starts a goroutine that accepts tasks and
 // performs function calls.
-type goWorkerWithFunc struct{
+type goWorkerWithFunc struct {
 	pool *PoolWithFunc
 	// args is a job should be done.
 	args chan interface{}
@@ -18,7 +18,7 @@ type goWorkerWithFunc struct{
 
 // run starts a goroutine to repeat the process
 // that performs the function calls.
-func (w *goWorkerWithFunc) run(){
+func (w *goWorkerWithFunc) run() {
 	w.pool.incRunning()
 	go func() {
 		defer func() {

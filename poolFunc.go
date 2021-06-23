@@ -1,4 +1,4 @@
-package nest
+package hive
 
 import (
 	"sync"
@@ -78,6 +78,7 @@ func (p *PoolWithFunc) periodicallyPurge() {
 	}
 
 }
+
 // NewPoolWithFunc生成具有特定函数的蚂蚁池实例。
 // NewPoolWithFunc generates an instance of ants pool with a specific function.
 func NewPoolWithFunc(size int, pf func(interface{}), options ...Option) (*PoolWithFunc, error) {

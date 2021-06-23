@@ -1,4 +1,4 @@
-package nest
+package hive
 
 import (
 	"errors"
@@ -13,7 +13,6 @@ var (
 	errQueueIsReleased = errors.New("the queue length is zero")
 )
 
-
 type workerArray interface {
 	len() int
 	isEmpty() bool
@@ -21,18 +20,17 @@ type workerArray interface {
 	detach() *goWorker
 	retrieveExpiry(duration time.Duration) []*goWorker
 	reset()
-
 }
 
 type arrayType int
 
-const(
-	stackType arrayType =1 << iota
+const (
+	stackType arrayType = 1 << iota
 	loopQueueType
 )
 
-func  newWorkerArray(aType arrayType,size int) workerArray{
-	switch aType{
+func newWorkerArray(aType arrayType, size int) workerArray {
+	switch aType {
 	case stackType:
 		return newWorkerStack(size)
 	case loopQueueType:

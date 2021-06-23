@@ -1,4 +1,4 @@
-package nest
+package hive
 
 import (
 	"errors"
@@ -73,6 +73,7 @@ type Logger interface {
 func Submit(task func()) error {
 	return defaultAntsPool.Submit(task)
 }
+
 // Running返回当前正在运行的goroutine的数目。
 // Running returns the number of the currently running goroutines.
 func Running() int {
