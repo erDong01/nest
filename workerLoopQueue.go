@@ -33,6 +33,7 @@ func (wq *loopQueue) len() int {
 	if wq.tail > wq.head {
 		return wq.tail - wq.head
 	}
+
 	return wq.size - wq.head + wq.tail
 }
 
@@ -44,19 +45,20 @@ func (wq *loopQueue) insert(worker *goWorker) error {
 	if wq.size == 0 {
 		return errQueueIsReleased
 	}
+
 	if wq.isFull {
 		return errQueueIsFull
 	}
 	wq.items[wq.tail] = worker
 	wq.tail++
+
 	if wq.tail == wq.size {
 		wq.tail = 0
-
 	}
-
 	if wq.tail == wq.head {
 		wq.isFull = true
 	}
+
 	return nil
 }
 
@@ -66,6 +68,7 @@ func (wq *loopQueue) detach() *goWorker {
 	}
 
 	w := wq.items[wq.head]
+	wq.items[wq.head] = nil
 	wq.head++
 	if wq.head == wq.size {
 		wq.head = 0
@@ -88,6 +91,7 @@ func (wq *loopQueue) retrieveExpiry(duration time.Duration) []*goWorker {
 			break
 		}
 		wq.expiry = append(wq.expiry, wq.items[wq.head])
+		wq.items[wq.head] = nil
 		wq.head++
 		if wq.head == wq.size {
 			wq.head = 0

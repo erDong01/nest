@@ -29,7 +29,8 @@ var (
 	// Error types for the Ants API.
 	//---------------------------------------------------------------------------
 
-	// ErrInvalidPoolSize will be returned when setting a negative number as pool capacity.
+	// ErrInvalidPoolSize will be returned when setting a negative number as pool capacity, this error will be only used
+	// by pool with func because pool without func can be infinite by setting up a negative capacity.
 	ErrInvalidPoolSize = errors.New("invalid size for pool")
 
 	// ErrLackPoolFunc will be returned when invokers don't provide function for pool.
@@ -44,17 +45,24 @@ var (
 	// ErrPoolOverload will be returned when the pool is full and no workers available.
 	ErrPoolOverload = errors.New("too many goroutines blocked on submit or Nonblocking is set")
 
+	// ErrInvalidPreAllocSize will be returned when trying to set up a negative capacity under PreAlloc mode.
+	ErrInvalidPreAllocSize = errors.New("can not set up a negative capacity under PreAlloc mode")
+
+	//---------------------------------------------------------------------------
+
+	// workerChanCap determines whether the channel of a worker should be a buffered channel
+	// to get the best performance. Inspired by fasthttp at
+	// https://github.com/valyala/fasthttp/blob/master/workerpool.go#L139
 	workerChanCap = func() int {
-		// Use blocking workerChan if GOMAXPROCS=1.
-		// This immediately switches Serve to WorkerFunc, which results
-		// in higher performance (under go1.5 at least).
+		// Use blocking channel if GOMAXPROCS=1.
+		// This switches context from sender to receiver immediately,
+		// which results in higher performance (under go1.5 at least).
 		if runtime.GOMAXPROCS(0) == 1 {
 			return 0
 		}
 
 		// Use non-blocking workerChan if GOMAXPROCS>1,
-		// since otherwise the Serve caller (Acceptor) may lag accepting
-		// new connections if WorkerFunc is CPU-bound.
+		// since otherwise the sender might be dragged down if the receiver is CPU-bound.
 		return 1
 	}()
 
@@ -66,6 +74,7 @@ var (
 
 // Logger is used for logging formatted messages.
 type Logger interface {
+	// Printf must have the same semantics as log.Printf.
 	Printf(format string, args ...interface{})
 }
 
@@ -74,7 +83,6 @@ func Submit(task func()) error {
 	return defaultAntsPool.Submit(task)
 }
 
-// Running返回当前正在运行的goroutine的数目。
 // Running returns the number of the currently running goroutines.
 func Running() int {
 	return defaultAntsPool.Running()
@@ -90,7 +98,6 @@ func Free() int {
 	return defaultAntsPool.Free()
 }
 
-// 释放关闭默认池。
 // Release Closes the default pool.
 func Release() {
 	defaultAntsPool.Release()
